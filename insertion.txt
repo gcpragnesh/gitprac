@@ -1,4 +1,4 @@
-oid TDatabase::insertSearchReports(std::vector<SearchReport> vectSearchReports)
+void TDatabase::insertSearchReports(std::vector<SearchReport> vectSearchReports)
 {
 	//
 	String strInsertQuery;
@@ -34,6 +34,7 @@ oid TDatabase::insertSearchReports(std::vector<SearchReport> vectSearchReports)
 	  }
 
 }
+sav search
 
 void __fastcall TReportsDlg::btnSaveSearchClick(TObject *Sender)
 {
