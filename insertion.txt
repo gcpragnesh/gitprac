@@ -1,0 +1,75 @@
+oid TDatabase::insertSearchReports(std::vector<SearchReport> vectSearchReports)
+{
+	//
+	String strInsertQuery;
+	 strInsertQuery+="Insert into hmi_components_Searchreports(chno,Frequency,Waveform,priority,bandwidth,platform,level,Start_Time,Stop_Time"
+	 ",doa_ww,doa_pdda,lf_doa,lf_tdoa,date,time,"
+	 "latitude,longitude,altitude) values";
+	 std::vector<SearchReport>::iterator it = vectSearchReports.begin();
+	 while(it != vectSearchReports.end())
+	 {
+		 SearchReport stSearchReport = *it;                                                  // \ escape  sequence tells the complier : treat next character as text.
+		 if(it!=vectSearchReports.begin())                                                   // (\' escape sequence used to include a literal single quote character inside a string )
+		 strInsertQuery+=",";                                                                // string in SQL SHOULD BE WRAPPED  IN \" string \"
+		 ++it;
+		 strInsertQuery+="(";
+		 strInsertQuery+=(stSearchReport.ucChno);
+		 strInsertQuery+=","+UIntToStr(stSearchReport.uiFrequency)+",\""+stSearchReport.strWaveform+"\",";
+		 strInsertQuery+=stSearchReport.ucPriority;
+		 strInsertQuery+=","+UIntToStr(stSearchReport.uiBandWidth)+",\""+stSearchReport.strPlatform+"\","
+		 +IntToStr(stSearchReport.iLevel)+",\""+stSearchReport.strStartTime+"\",\""+stSearchReport.strStopTime+"\","
+		 +FloatToStr(stSearchReport.fDoa_ww)+","+FloatToStr(stSearchReport.fDoa_PDDA)+","+FloatToStr(stSearchReport.fLF_DOA)+","
+		 +FloatToStr(stSearchReport.fLF_TDOA)+",\""+stSearchReport.strDate+"\",\""+stSearchReport.strTime+"\","
+		 +FloatToStr(stSearchReport.fLatitude)+","+FloatToStr(stSearchReport.fLongitude)+","+IntToStr(stSearchReport.iAltitude)+")";
+	  }
+
+	  try
+	  {
+	  ShowMessage(strInsertQuery);
+	  RunSQL(strInsertQuery);
+	  }
+	  catch(Exception &ex)
+	  {
+		ShowMessage("Error:- "+ex.Message);
+	  }
+
+}
+
+void __fastcall TReportsDlg::btnSaveSearchClick(TObject *Sender)
+{
+//
+	m_vectSearchReportsData.clear();
+	int ichNo = 1;
+	if(SearchReportsCh1Btn->IsChecked)
+	ichNo = 1;
+	else if(SearchReportsCh2Btn->IsChecked)
+	ichNo=2;
+	for(int iRow=0;iRow<SearchReportsGrid1->RowCount;iRow++)
+	{
+		if(SearchReportsGrid1->Cells[4][iRow].Trim().IsEmpty())
+		continue;
+		SearchReport stSearchReport;
+		stSearchReport.ucChno = ichNo;
+		stSearchReport.uiFrequency = StrToUIntDef(SearchReportsGrid1->Cells[4][iRow].Trim(),0);
+		stSearchReport.strWaveform = SearchReportsGrid1->Cells[1][iRow].Trim();
+		stSearchReport.ucPriority = StrToUIntDef(SearchReportsGrid1->Cells[2][iRow].Trim(),0);
+		stSearchReport.uiBandWidth = StrToUIntDef(SearchReportsGrid1->Cells[5][iRow].Trim(),0);
+		stSearchReport.strPlatform = SearchReportsGrid1->Cells[3][iRow].Trim();
+		stSearchReport.iLevel = StrToIntDef(SearchReportsGrid1->Cells[6][iRow].Trim(),-110);
+		stSearchReport.strStartTime = SearchReportsGrid1->Cells[11][iRow].Trim();
+		stSearchReport.strStopTime = SearchReportsGrid1->Cells[12][iRow].Trim();
+		stSearchReport.fDoa_ww = StrToFloatDef(SearchReportsGrid1->Cells[7][iRow].Trim(),0);
+		stSearchReport.fDoa_PDDA = StrToFloatDef(SearchReportsGrid1->Cells[8][iRow].Trim(),0);
+		stSearchReport.fLF_DOA = StrToFloatDef(SearchReportsGrid1->Cells[9][iRow].Trim(),0);
+		stSearchReport.fLF_TDOA = StrToFloatDef(SearchReportsGrid1->Cells[10][iRow].Trim(),0);
+		stSearchReport.strDate = Now().FormatString("dd:mm:yyyy");
+		stSearchReport.strTime = Now().FormatString("hh:nn:ss");
+		stSearchReport.fLatitude=0;
+		stSearchReport.fLongitude=0;
+		stSearchReport.iAltitude =0;
+		m_vectSearchReportsData.push_back(stSearchReport);
+	}
+	TFDConnection* TDatabase;
+	TDatabase::insertSearchReports(m_vectSearchReportsData);
+}
+//---------------------------------------------------------------------------
