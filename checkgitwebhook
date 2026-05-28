@@ -1,8 +1,6 @@
 checking git webhook that it will trigger or not ?
 check
-how to make x branch as default in github in place of main or master?4:19 PMClaude responded: To make x branch the default in GitHub:To make x branch the default in GitHub:
-Steps:
-
+how to make x branch as default in github in place of main or master?
 Go to your repository on GitHub.com
 Click Settings (top menu of the repo)
 Click Branches (left sidebar, under "Code and automation")
